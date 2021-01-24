@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Electronica-Normal';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: local('Electronica-Normal'),
+    url('/fonts/Electronica-Normal.woff2') format('woff2'),
+    url('/fonts/Electronica-Normal.woff') format('woff'),
+    url('/fonts/Electronica-Normal.ttf') format('ttf');
+}
+
+* {
+  position: relative;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+}
