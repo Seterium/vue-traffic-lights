@@ -125,23 +125,23 @@ export default {
     loadState() {
       const local = localStorage.getItem('vtl-state')
 
-      if (local) {
-        const [
-          state,
-          countdown
-        ] = local.split(':')
-
-        if (this.states[state] && !isNaN(parseInt(countdown))) {
-          return {
-            state,
-            countdown: parseInt(countdown)
-          }
-        } else {
-          throw 'Local data invalid'
-        }
+      if (!local) {
+        throw 'Local data not found'
       }
 
-      throw 'Local data not founded'
+      const [
+        state,
+        countdown
+      ] = local.split(':')
+
+      if (!this.states[state] && isNaN(parseInt(countdown))) {
+        throw 'Local data invalid'
+      }
+
+      return {
+        state,
+        countdown: parseInt(countdown)
+      }
     },
 
     // Сохранение состояния приложения в localStorage
