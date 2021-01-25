@@ -165,13 +165,6 @@ export default {
 
           this.currentStateName = state
           this.setState(countdown)
-
-          this.$router.replace({
-            name: 'state',
-            params: {
-              state: state
-            }
-          })
         } catch (error) {
           this.$router.replace({
             name: 'state',
