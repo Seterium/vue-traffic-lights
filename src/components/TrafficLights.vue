@@ -16,6 +16,7 @@ export default {
         next: 'redAndYellow'
       },
       redAndYellow: {
+        countdown: 3,
         nextOnCountdown: 0,
         lights: {
           red: true,
@@ -35,6 +36,7 @@ export default {
         next: 'blinkingGreen'
       },
       blinkingGreen: {
+        countdown: 5,
         nextOnCountdown: 0,
         blinking: [
           'green'
@@ -64,14 +66,18 @@ export default {
     this.init()
   },
   computed: {
+    // Текущее состояние приложения
     state() {
       return this.states[this.currentStateName]
     },
+    
+    // Форматирование обратного отсчета (добавление 0 в начале если значение меньше 10)
     countdownFormatted() {
       return this.countdown < 10 ? `0${this.countdown}` : this.countdown
     },
   },
   methods: {
+    // Инициализация цикла обновления состояния
     init() {
       setInterval(() => {
         if (this.countdown) {
@@ -80,13 +86,14 @@ export default {
 
         if (this.countdown === this.state.nextOnCountdown) {
           this.currentStateName = this.state.next
-      
           this.setState()
         }
 
         this.saveState()
       }, 1000)
     },
+
+    // Установка состояния
     setState(countdown = null) {
       if (countdown) {
         this.countdown = countdown
@@ -113,6 +120,8 @@ export default {
         clearInterval(this.blinking)
       }
     },
+
+    // Загрузка сохраненного в localStorage состояния
     loadState() {
       const local = localStorage.getItem('vtl-state')
 
@@ -122,19 +131,25 @@ export default {
           countdown
         ] = local.split(':')
 
-        if (this.states[state]) {
+        if (this.states[state] && !isNaN(parseInt(countdown))) {
           return {
             state,
             countdown: parseInt(countdown)
           }
+        } else {
+          throw 'Local data invalid'
         }
       }
 
-      return false
+      throw 'Local data not founded'
     },
+
+    // Сохранение состояния приложения в localStorage
     saveState() {
       localStorage.setItem('vtl-state', `${this.currentStateName}:${this.countdown}`)
     },
+
+    // Проверка параметров URL перед запуском приложения
     checkParams() {
       const { state } = this.$route.params
 
@@ -142,19 +157,22 @@ export default {
         this.currentStateName = state
         this.setState()
       } else {
-        const localData = this.loadState()
+        try {
+          const {
+            state,
+            countdown
+          } = this.loadState()
 
-        if (localData) {
-          this.currentStateName = localData.state
-          this.setState(localData.countdown)
+          this.currentStateName = state
+          this.setState(countdown)
 
-          this.$router.push({
+          this.$router.replace({
             name: 'state',
             params: {
-              state: localData.state
+              state: state
             }
           })
-        } else {
+        } catch (error) {
           this.$router.replace({
             name: 'state',
             params: {
